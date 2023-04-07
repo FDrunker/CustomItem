@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CustomItem:jar">
+    <output-path>$PROJECT_DIR$/../../../Minecraft/Servers/Paper-1.19.3/plugins</output-path>
+    <root id="archive" name="CustomItem.jar" />
+  </artifact>
+</component>

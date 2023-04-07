@@ -1,0 +1,56 @@
+# 名字
+name: '&b疯狂钻石'
+# 材质(必须大写，不支持MOD物品)
+type: DIAMOND
+# 描述
+lore:
+  - '&6破坏力: A'
+  - '&6成长性: C'
+  - '&6精密度: B'
+  - '&6持续力: B'
+  - '&6射程: D'
+  - '&6速度: A'
+# 是否不可破坏
+unbreakable: true
+# 是否隐藏原版属性描述
+attributes: true
+# 是否隐藏附魔效果
+enchants: true
+# 右键使用后的声音
+sound:
+  # 其他玩家是否能听见
+  other: false
+  # 声音 (必须全大写, 只支持当前版本有的声音)
+  type: 'ENTITY_PLAYER_LEVELUP'
+  # 音量
+  volume: 1
+# 满足变量才能使用(例如下发示例, 玩家金币等于100块钱时才能使用)
+# 还可以使用 大于> 小于< 不等于!= 等运算符
+# 大部分PAPI变量都支持
+placeholder: '%vault_eco_balance%=100'
+# 不满足PAPI变量时的通知
+papi_message: '&c血量不足100, 无法使用'
+# 使用物品的权限
+permission: 'customitem.example'
+# 没有权限时使用物品的通知
+per_message: '&c你没有权限使用该物品'
+# 使用次数(-1则代表无限次)
+use_num: -1
+# 使用冷却(单位: 秒)
+# 填 0 则是没有冷却时间
+cool_down: 10
+# 当物品还在冷却中的通知
+cool_message: '&c物品冷却中'
+# 发送消息(为空则不发送)
+message: '&a你使用了疯狂钻石!'
+# 全服通知(为空则不发送)
+announce: '&a玩家[player]使用了疯狂钻石!'
+# 执行指令(支持PAPI变量)
+# cmd 玩家执行
+# opcmd 让玩家作为op的身份执行(不推荐, 如果出BUG很危险)
+# servercmd 控制台执行
+commands:
+  - 'cmd->me Crazy Diamond!'
+  - 'opcmd->gamemode %player_name% 1'
+  - 'servercmd->say Crazy Diamond!'
+
