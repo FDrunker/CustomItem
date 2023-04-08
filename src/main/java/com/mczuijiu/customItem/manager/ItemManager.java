@@ -3,8 +3,8 @@ package com.mczuijiu.customItem.manager;
 import com.mczuijiu.customItem.Main;
 import com.mczuijiu.customItem.item.CustomItem;
 import com.mczuijiu.customItem.utils.ItemUtils;
+import de.tr7zw.nbtapi.NBT;
 import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,11 +27,10 @@ public class ItemManager {
 
     public void loadItems() {
         this.itemMap.clear();
+        plugin.getLogger().info("初始化配置文件中...");
         File folder = new File(plugin.getDataFolder(), "items");
         if (!folder.exists() || !folder.isDirectory()) {
-            plugin.getLogger().warning(folder.getName() + "文件夹不存在");
-            plugin.getLogger().severe("配置文件读取失败, 插件将关闭!");
-            Bukkit.getPluginManager().disablePlugin(plugin);
+            plugin.saveResource("items/example.yml", false);
         }
         File[] files = folder.listFiles();
         for (int i = 0; i < files.length; i++) {
@@ -46,6 +46,7 @@ public class ItemManager {
                 plugin.getLogger().warning("配置文件 " + files[i].getName() + " 读取失败, 请检查文件!");
             }
         }
+        plugin.getLogger().info("配置文件初始化完成");
     }
 
     public Set<String> getAllItemName() {
@@ -54,6 +55,19 @@ public class ItemManager {
 
     public CustomItem getCustomItem(String fileName) {
         return itemMap.get(fileName);
+    }
+
+    public CustomItem getCustomItem(ItemStack itemStack) {
+        if (NBT.get(itemStack, nbt -> nbt.hasTag(Main.getNbtKey()))) {
+            return itemMap.get(NBT.get(itemStack, nbt -> nbt.getString(Main.getNbtKey())));
+        } else if (Main.getMainConfig().getBoolean("checkNameEnable")) {
+            for (String fileName : itemMap.keySet()) {
+                if (itemStack.getItemMeta().getDisplayName().contains(fileName)) {
+                    return itemMap.get(fileName);
+                }
+            }
+        }
+        return null;
     }
 
     public boolean contentPlaceholder(Player player, String placeholder) {

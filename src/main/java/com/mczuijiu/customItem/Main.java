@@ -19,18 +19,18 @@ public class Main extends JavaPlugin {
         instance = this;
         saveDefaultConfig();
         reloadConfig();
-        saveResource("items/example.yml", false);
         itemManager = new ItemManager(instance);
         itemManager.loadItems();
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             papiEnable = true;
-            instance.getLogger().info("检测到PlaceholderAPI插件, 支持变量判断");
+            getLogger().info("检测到PlaceholderAPI插件, 支持变量判断");
         } else {
             papiEnable = false;
-            instance.getLogger().info("未检测到PlaceholderAPI插件, 部分功能失效");
+            getLogger().info("未检测到PlaceholderAPI插件, 部分功能失效");
         }
         Bukkit.getPluginCommand("customitem").setExecutor(new ItemCommands());
         Bukkit.getPluginManager().registerEvents(new PlayerUseItemListener(), this);
+        getLogger().info("欢迎使用本插件, 问题反馈联系作者QQ: 1098850768");
     }
 
     @Override

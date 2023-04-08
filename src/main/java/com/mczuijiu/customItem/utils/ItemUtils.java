@@ -1,6 +1,5 @@
 package com.mczuijiu.customItem.utils;
 
-import com.mczuijiu.customItem.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.UnsafeValues;
@@ -11,6 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -131,26 +131,20 @@ public class ItemUtils {
     }
 
     public static boolean isNumeric(String str) {
-        String newStr=str;
-        String regex="([1-9]\\d*\\.?\\d+)|(0\\.\\d*[1-9])|(\\d+)";
-        Pattern pattern=Pattern.compile(regex);
-        Matcher matcher=pattern.matcher(str);
-        while(matcher.find()) {
-            String oldNumber=matcher.group();
-            newStr=newStr.replaceAll(oldNumber,"");
+        String newStr = str;
+        String regex = "([1-9]\\d*\\.?\\d+)|(0\\.\\d*[1-9])|(\\d+)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(str);
+        while (matcher.find()) {
+            String oldNumber = matcher.group();
+            newStr = newStr.replaceAll(oldNumber, "");
         }
         return newStr.isEmpty();
     }
 
-    public static int getUseNum(ItemStack itemStack) {
-        String[] split = Main.getMainConfig().getString("useNumLore").split("\\{num}");
-        List<String> lore = itemStack.getItemMeta().getLore();
-        for (int i = 0; i < lore.size(); i++) {
-            if (lore.get(i).startsWith(split[0])) {
-                return Integer.parseInt(lore.get(i).replace(split[0], "").replace(split[1], ""));
-            }
-        }
-        return 0;
+    public static boolean startsWith(ItemStack itemStack, String str) {
+
+        return false;
     }
 
 }
