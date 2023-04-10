@@ -5,6 +5,7 @@ import com.mczuijiu.customItem.item.CustomItem;
 import com.mczuijiu.customItem.utils.ItemUtils;
 import de.tr7zw.nbtapi.NBT;
 import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -33,20 +34,30 @@ public class ItemManager {
             plugin.saveResource("items/example.yml", false);
         }
         File[] files = folder.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            if (!files[i].exists()) continue;
-            if (files[i].isDirectory()) continue;
-            FileConfiguration itemConfig = YamlConfiguration.loadConfiguration(files[i]);
+        loadAllFile(files);
+        plugin.getLogger().info("配置文件初始化完成");
+    }
+
+    private void loadAllFile(File[] files) {
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
+            if (!file.exists()) continue;
+            if (file.isDirectory()) {
+                loadAllFile(file.listFiles());
+                continue;
+            }
+            FileConfiguration itemConfig = YamlConfiguration.loadConfiguration(file);
             CustomItem item = new CustomItem();
-            String fileName = files[i].getName().replace(".yml", "");
+            String fileName = file.getName().replace(".yml", "");
             if (item.initCustomItem(fileName, itemConfig)) {
                 itemMap.put(fileName, item);
-                plugin.getLogger().info("初始化 " + files[i].getName() + " 成功");
+                plugin.getLogger().info("初始化 " + file.getName() + " 成功");
             } else {
-                plugin.getLogger().warning("配置文件 " + files[i].getName() + " 读取失败, 请检查文件!");
+                plugin.getLogger().warning("配置文件 " + file.getName() + " 读取失败, 请检查文件!");
             }
         }
-        plugin.getLogger().info("配置文件初始化完成");
     }
 
     public Set<String> getAllItemName() {
@@ -104,6 +115,24 @@ public class ItemManager {
             return !str.equalsIgnoreCase(split[1]);
         }
         return false;
+    }
+
+    public void executeCommands(List<String> commands, Player player) {
+        for(String cmd: commands) {
+            if (!cmd.contains("->")) {
+                continue;
+            }
+            String[] split = cmd.split("->");
+            if (split[0].equalsIgnoreCase("cmd")) {
+                Bukkit.dispatchCommand(player, split[1].replace("[player]", player.getName()));
+                continue;
+            }
+            if (split[0].equalsIgnoreCase("servercmd")) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), split[1].replace("[player]", player.getName()));
+                continue;
+            }
+            plugin.getLogger().info(cmd + "填写格式错误, 无法执行!");
+        }
     }
 
 }

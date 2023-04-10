@@ -47,10 +47,8 @@ message: '&a你使用了疯狂钻石!'
 announce: '&a玩家[player]使用了疯狂钻石!'
 # 执行指令(支持PAPI变量)
 # cmd 玩家执行
-# opcmd 让玩家作为op的身份执行(不推荐, 如果出BUG很危险)
 # servercmd 控制台执行
 commands:
   - 'cmd->me Crazy Diamond!'
-  - 'opcmd->gamemode %player_name% 1'
-  - 'servercmd->say Crazy Diamond!'
+  - 'servercmd->say [player]Crazy Diamond!'
 

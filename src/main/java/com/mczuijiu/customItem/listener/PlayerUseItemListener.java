@@ -4,7 +4,6 @@ import com.mczuijiu.customItem.Main;
 import com.mczuijiu.customItem.item.CustomItem;
 import com.mczuijiu.customItem.manager.ItemManager;
 import com.mczuijiu.customItem.utils.ItemUtils;
-import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.NBTItem;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -54,7 +53,7 @@ public class PlayerUseItemListener implements Listener {
                         if (useNum == 0) {
                             player.getInventory().setItemInMainHand(null);
                         } else {
-                            lore.set(loreIndex, lore.get(loreIndex).replace(useNum+1+"", useNum+""));
+                            lore.set(loreIndex, lore.get(loreIndex).replace(String.valueOf(useNum+1), String.valueOf(useNum)));
                             meta.setLore(lore);
                             itemStack.setItemMeta(meta);
                             player.getInventory().setItemInMainHand(itemStack);
@@ -129,7 +128,7 @@ public class PlayerUseItemListener implements Listener {
         }
 
         if (!customItem.getCommands().isEmpty()) {
-
+            itemManager.executeCommands(customItem.getCommands(), player);
         }
 
     }
