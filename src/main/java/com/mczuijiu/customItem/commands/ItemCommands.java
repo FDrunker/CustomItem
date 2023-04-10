@@ -2,11 +2,13 @@ package com.mczuijiu.customItem.commands;
 
 import com.mczuijiu.customItem.Main;
 import com.mczuijiu.customItem.manager.ItemManager;
+import com.mczuijiu.customItem.utils.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -15,38 +17,41 @@ import java.util.Objects;
 
 public class ItemCommands implements TabExecutor {
 
-    private ItemManager itemManager;
-    private String prefix;
+    private final ItemManager itemManager;
+    private final String prefix;
 
     public ItemCommands() {
         this.itemManager = Main.getItemManager();
-        this.prefix = Main.getMainConfig().getString("prefix").replaceAll("&", "§");
+        this.prefix = ItemUtils.colorReplace(Main.getMainConfig().getString("prefix", ""));
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (!sender.hasPermission("customitem.admin") || !sender.isOp()) {
             sender.sendMessage(prefix + "§c你没有权限执行该指令");
             return true;
         }
         if (args.length >= 1) {
             switch (args[0].toLowerCase()) {
-                case "help":
+                case "help" -> {
                     helpCommand(sender);
                     return true;
-                case "reload":
+                }
+                case "reload" -> {
                     reloadCommand(sender);
                     return true;
-                case "give":
+                }
+                case "give" -> {
                     giveCommand(sender, args);
                     return true;
+                }
             }
         }
         return false;
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+    public List<String> onTabComplete(CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (!sender.hasPermission("customitem.admin") || !sender.isOp()) return null;
         LinkedList<String> tips = new LinkedList<>();
         if (args.length == 1) {

@@ -35,7 +35,7 @@ permission: 'customitem.example'
 # 没有权限时使用物品的通知
 per_message: '&c你没有权限使用该物品'
 # 使用次数(-1则代表无限次)
-use_num: -1
+use_num: 2
 # 使用冷却(单位: 秒)
 # 填 0 则是没有冷却时间
 cool_down: 10
@@ -44,11 +44,10 @@ cool_message: '&c物品冷却中'
 # 发送消息(为空则不发送)
 message: '&a你使用了疯狂钻石!'
 # 全服通知(为空则不发送)
-announce: '&a玩家[player]使用了疯狂钻石!'
-# 执行指令(支持PAPI变量)
+# 所有通知都支持PAPI变量
+announce: '&a玩家%player_name%使用了疯狂钻石!'
 # cmd 玩家执行
 # servercmd 控制台执行
 commands:
   - 'cmd->me Crazy Diamond!'
   - 'servercmd->say [player]Crazy Diamond!'
-

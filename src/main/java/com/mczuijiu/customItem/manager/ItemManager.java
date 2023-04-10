@@ -4,6 +4,7 @@ import com.mczuijiu.customItem.Main;
 import com.mczuijiu.customItem.item.CustomItem;
 import com.mczuijiu.customItem.utils.ItemUtils;
 import de.tr7zw.nbtapi.NBT;
+import de.tr7zw.nbtapi.NBTItem;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -115,6 +116,26 @@ public class ItemManager {
             return !str.equalsIgnoreCase(split[1]);
         }
         return false;
+    }
+
+    public ItemStack computeUseNum(CustomItem customItem, NBTItem nbt) {
+        int useNum = nbt.getInteger(Main.getNbtKey() + ".use");
+        ItemStack itemStack = null;
+        if (useNum != -1) {
+            useNum++;
+            if (useNum == customItem.getUse_num()) {
+                if (nbt.getItem().getAmount() == 1) {
+                    return null;
+                }
+                nbt.setInteger(Main.getNbtKey() + ".use", 0);
+                itemStack = nbt.getItem();
+                itemStack.setAmount(itemStack.getAmount() - 1);
+                return itemStack;
+            }
+            nbt.setInteger(Main.getNbtKey() + ".use", useNum);
+            itemStack = nbt.getItem();
+        }
+        return itemStack;
     }
 
     public void executeCommands(List<String> commands, Player player) {

@@ -37,8 +37,8 @@ public class CustomItem {
         if (itemName.isEmpty() || itemType.isEmpty()) {
             return false;
         }
-        itemName = itemName.replaceAll("&", "§");
-        itemLore.replaceAll(s -> s.replaceAll("&", "§"));
+        itemName = ItemUtils.colorReplace(itemName);
+        itemLore.replaceAll(ItemUtils::colorReplace);
         this.itemStack = new ItemStack(ItemUtils.getMaterial(itemType));
         ItemMeta meta = this.itemStack.getItemMeta();
         assert meta != null;
@@ -66,14 +66,14 @@ public class CustomItem {
             this.volume = config.getDouble("sound.volume");
         }
         this.placeholder = config.getString("placeholder", "");
-        this.papi_message = config.getString("papi_message", "");
+        this.papi_message = ItemUtils.colorReplace(config.getString("papi_message", ""));
         this.permission = config.getString("permission", "");
-        this.per_message = config.getString("per_message", "");
+        this.per_message = ItemUtils.colorReplace(config.getString("per_message", ""));
         this.use_num = config.getInt("use_num", -1);
         this.cool_down = config.getLong("cool_down", 0) * 1000;
-        this.cool_message = config.getString("cool_message", "");
-        this.message = config.getString("message", "").replaceAll("&", "§");
-        this.announce = config.getString("announce", "").replaceAll("&", "§");
+        this.cool_message = ItemUtils.colorReplace(config.getString("cool_message", ""));
+        this.message = ItemUtils.colorReplace(config.getString("message", ""));
+        this.announce = ItemUtils.colorReplace(config.getString("announce", ""));
         this.commands = config.getStringList("commands");
         return true;
     }

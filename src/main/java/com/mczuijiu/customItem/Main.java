@@ -35,7 +35,7 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
+        getLogger().info("插件已卸载, 感谢使用本插件");
     }
 
     public static Main getInstance() {

@@ -5,6 +5,7 @@ import com.mczuijiu.customItem.item.CustomItem;
 import com.mczuijiu.customItem.manager.ItemManager;
 import com.mczuijiu.customItem.utils.ItemUtils;
 import de.tr7zw.nbtapi.NBTItem;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,7 +21,7 @@ import java.util.Objects;
 public class PlayerUseItemListener implements Listener {
 
     private final ItemManager itemManager = Main.getItemManager();
-    private final String prefix = Main.getMainConfig().getString("useItemPrefix");
+    private final String prefix = ItemUtils.colorReplace(Main.getMainConfig().getString("useItemPrefix", ""));
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
@@ -32,7 +33,7 @@ public class PlayerUseItemListener implements Listener {
         CustomItem customItem = itemManager.getCustomItem(itemStack);
         if (customItem == null) {
             if (Main.getMainConfig().getBoolean("checkLoreEnable")) {
-                String[] split = Main.getMainConfig().getString("useNumLore").split("\\{num}");
+                String[] split = Main.getMainConfig().getString("useNumLore", "").split("\\{num}");
                 String num = null;
                 int loreIndex = -1;
                 ItemMeta meta = itemStack.getItemMeta();
@@ -68,7 +69,7 @@ public class PlayerUseItemListener implements Listener {
         if (Main.isPapiEnable() && !customItem.getPlaceholder().isEmpty()) {
             if (!itemManager.contentPlaceholder(player, customItem.getPlaceholder())) {
                 if (!customItem.getPapi_message().isEmpty()) {
-                    player.sendMessage(prefix + customItem.getPapi_message());
+                    player.sendMessage(prefix + PlaceholderAPI.setPlaceholders(player,customItem.getPapi_message()));
                 }
                 return;
             }
@@ -77,7 +78,7 @@ public class PlayerUseItemListener implements Listener {
         if (!customItem.getPermission().isEmpty()) {
             if (!player.hasPermission(customItem.getPermission())) {
                 if (!customItem.getPer_message().isEmpty()) {
-                    player.sendMessage(prefix + customItem.getPer_message());
+                    player.sendMessage(prefix + PlaceholderAPI.setPlaceholders(player, customItem.getPer_message()));
                 }
                 return;
             }
@@ -87,28 +88,13 @@ public class PlayerUseItemListener implements Listener {
         if (nbt.hasTag(Main.getNbtKey())) {
             long time = nbt.getLong(Main.getNbtKey() + ".time");
             if (System.currentTimeMillis() - time < customItem.getCool_down()) {
-                player.sendMessage(prefix + customItem.getCool_message());
+                player.sendMessage(prefix + PlaceholderAPI.setPlaceholders(player, customItem.getCool_message()));
                 return;
             }
+            nbt.setLong(Main.getNbtKey() + ".time", System.currentTimeMillis());
 
-            int useNum = nbt.getInteger(Main.getNbtKey() + ".use");
-            if (useNum != -1) {
-                useNum++;
-                if (useNum == customItem.getUse_num()) {
-                    if (itemStack.getAmount() > 1) {
-                        itemStack.setAmount(itemStack.getAmount() - 1);
-                        useNum = 0;
-                        nbt.setLong(Main.getNbtKey() + ".time", System.currentTimeMillis());
-                        nbt.setInteger(Main.getNbtKey() + ".use", useNum);
-                    } else {
-                        player.getInventory().setItemInMainHand(null);
-                    }
-                } else {
-                    nbt.setLong(Main.getNbtKey() + ".time", System.currentTimeMillis());
-                    nbt.setInteger(Main.getNbtKey() + ".use", useNum);
-                    player.getInventory().setItemInMainHand(itemStack);
-                }
-            }
+            itemStack = itemManager.computeUseNum(customItem, nbt);
+            player.getInventory().setItemInMainHand(itemStack);
         }
 
         if (customItem.getSound() != null) {
@@ -120,11 +106,11 @@ public class PlayerUseItemListener implements Listener {
         }
 
         if (!customItem.getMessage().isEmpty()) {
-            player.sendMessage(prefix + customItem.getMessage());
+            player.sendMessage(prefix + PlaceholderAPI.setPlaceholders(player, customItem.getMessage()));
         }
 
         if (!customItem.getAnnounce().isEmpty()) {
-            Bukkit.broadcastMessage(prefix + customItem.getAnnounce());
+            Bukkit.broadcastMessage(prefix + PlaceholderAPI.setPlaceholders(player, customItem.getAnnounce()));
         }
 
         if (!customItem.getCommands().isEmpty()) {

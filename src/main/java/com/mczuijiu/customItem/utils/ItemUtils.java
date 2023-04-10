@@ -6,12 +6,11 @@ import org.bukkit.UnsafeValues;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -142,9 +141,8 @@ public class ItemUtils {
         return newStr.isEmpty();
     }
 
-    public static boolean startsWith(ItemStack itemStack, String str) {
-
-        return false;
+    public static String colorReplace(@NotNull String message) {
+        return message.replaceAll("&", "§");
     }
 
 }
