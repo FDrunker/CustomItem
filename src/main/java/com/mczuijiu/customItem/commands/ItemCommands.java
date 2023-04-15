@@ -103,9 +103,11 @@ public class ItemCommands implements TabExecutor {
     }
 
     private void reloadCommand(CommandSender sender) {
-        Main.getInstance().reloadConfig();
-        Main.getItemManager().loadItems();
-        sender.sendMessage(prefix + "§a重载配置文件完成");
+        Bukkit.getScheduler().runTaskAsynchronously(Main.getInstance(), () -> {
+            Main.getInstance().reloadConfig();
+            Main.getItemManager().loadItems();
+            sender.sendMessage(prefix + "§a重载配置文件完成");
+        });
     }
 
     private void giveCommand(CommandSender sender, String[] args) {

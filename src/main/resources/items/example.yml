@@ -1,3 +1,12 @@
+# LEFT_CLICK_AIR 左击空气
+# LEFT_CLICK_BLOCK 左击一个方块
+# PHYSICAL 踩上一个方块 举几个例子: 在耕地跳跃 站在压力板上 让红石矿石发光(点击/踩踏) 触发绊线钩
+# RIGHT_CLICK_AIR 右击空气
+# RIGHT_CLICK_BLOCK 右击一个方块
+# 物品使用动作, 满足动作条件才会触发
+# 支持多个动作条件
+actions:
+  - RIGHT_CLICK_AIR
 # 名字
 name: '&b疯狂钻石'
 # 材质(必须大写，不支持MOD物品)
@@ -10,13 +19,14 @@ lore:
   - '&6持续力: B'
   - '&6射程: D'
   - '&6速度: A'
+  - '剩余使用次数: {useNum}'
 # 是否不可破坏
 unbreakable: true
 # 是否隐藏原版属性描述
 attributes: true
 # 是否隐藏附魔效果
 enchants: true
-# 右键使用后的声音
+# 使用后的声音
 sound:
   # 其他玩家是否能听见
   other: false
@@ -27,27 +37,40 @@ sound:
 # 满足变量才能使用(例如下发示例, 玩家金币等于100块钱时才能使用)
 # 还可以使用 大于> 小于< 不等于!= 等运算符
 # 大部分PAPI变量都支持
-placeholder: '%vault_eco_balance%=100'
+placeholder:
+  - '%vault_eco_balance%>=100'
 # 不满足PAPI变量时的通知
-papi_message: '&c血量不足100, 无法使用'
+papi_message:
+  - 'actionbar->&c血量不足100, 无法使用'
 # 使用物品的权限
-permission: 'customitem.example'
+permission:
+  - 'customitem.example'
 # 没有权限时使用物品的通知
-per_message: '&c你没有权限使用该物品'
+per_message:
+  - 'bossbar->&c你没有权限使用该物品'
 # 使用次数(-1则代表无限次)
 use_num: 2
 # 使用冷却(单位: 秒)
 # 填 0 则是没有冷却时间
 cool_down: 10
 # 当物品还在冷却中的通知
-cool_message: '&c物品冷却中'
-# 发送消息(为空则不发送)
-message: '&a你使用了疯狂钻石!'
-# 全服通知(为空则不发送)
+cool_message:
+  - 'title->&c物品冷却中, 还有{cool}秒'
+# 使用完后发送消息
 # 所有通知都支持PAPI变量
-announce: '&a玩家%player_name%使用了疯狂钻石!'
+# chat 发送至聊天框
+# actionbar 发送至血条上方
+# title 发送至屏幕中间
+# bossbar 发送至boss血条
+# announce 全服通知
+message:
+  - 'chat->&a你使用了疯狂钻石!'
+  - 'actionbar->&a你使用了疯狂钻石!'
+  - 'title->&a你使用了疯狂钻石!'
+  - 'bossbar->&a你使用了疯狂钻石!'
+  - 'announce->&a玩家%player_name%使用了疯狂钻石!'
 # cmd 玩家执行
 # servercmd 控制台执行
 commands:
   - 'cmd->me Crazy Diamond!'
-  - 'servercmd->say [player]Crazy Diamond!'
+  - 'servercmd->say %player_name%Crazy Diamond!'

@@ -3,31 +3,50 @@ package com.mczuijiu.customItem.item;
 import com.mczuijiu.customItem.Main;
 import com.mczuijiu.customItem.utils.ItemUtils;
 import de.tr7zw.nbtapi.NBT;
+import lombok.Getter;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CustomItem {
+    @Getter
+    private List<Action> actions;
+    @Getter
     private ItemStack itemStack;
+    @Getter
     private Sound sound;
+    @Getter
     private boolean other;
+    @Getter
     private double volume;
-    private String placeholder;
-    private String papi_message;
-    private String permission;
-    private String per_message;
+    @Getter
+    private List<String> placeholder;
+    @Getter
+    private List<String> papi_message;
+    @Getter
+    private List<String> permission;
+    @Getter
+    private List<String> per_message;
+    @Getter
     private int use_num;
+    @Getter
     private long cool_down;
-    private String cool_message;
-    private String message;
-    private String announce;
+    @Getter
+    private List<String> cool_message;
+    @Getter
+    private List<String> message;
+    @Getter
     private List<String> commands;
 
-    public boolean initCustomItem(String name, FileConfiguration config) {
+    public static CustomItem loadCustomItem(String name, FileConfiguration config) {
+        CustomItem customItem = new CustomItem();
+        // 创建物品
         String itemName = config.getString("name", "");
         String itemType = config.getString("type", "");
         List<String> itemLore = config.getStringList("lore");
@@ -35,13 +54,15 @@ public class CustomItem {
         boolean attributes = config.getBoolean("attributes", false);
         boolean enchants = config.getBoolean("enchants", false);
         if (itemName.isEmpty() || itemType.isEmpty()) {
-            return false;
+            return null;
         }
         itemName = ItemUtils.colorReplace(itemName);
         itemLore.replaceAll(ItemUtils::colorReplace);
-        this.itemStack = new ItemStack(ItemUtils.getMaterial(itemType));
-        ItemMeta meta = this.itemStack.getItemMeta();
-        assert meta != null;
+        customItem.itemStack = new ItemStack(ItemUtils.getMaterial(itemType));
+        ItemMeta meta = customItem.itemStack.getItemMeta();
+        if (meta == null) {
+            return null;
+        }
         meta.setDisplayName(itemName);
         meta.setLore(itemLore);
         if (unbreakable) {
@@ -53,84 +74,44 @@ public class CustomItem {
         if (enchants) {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
-        this.itemStack.setItemMeta(meta);
-        NBT.modify(itemStack, nbt -> {
+        customItem.itemStack.setItemMeta(meta);
+        NBT.modify(customItem.itemStack, nbt -> {
             nbt.setString(Main.getNbtKey(), name);
             nbt.setInteger(Main.getNbtKey() + ".use", 0);
             nbt.setLong(Main.getNbtKey() + ".time", 0L);
         });
+        // 使用动作
+        if (config.contains("actions")) {
+            customItem.actions = new ArrayList<>();
+            config.getStringList("actions").forEach(action -> customItem.actions.add(Action.valueOf(action)));
+        }
+        // 使用声音
         String soundType = config.getString("sound.type", "");
         if (!soundType.equalsIgnoreCase("")) {
-            this.sound = Sound.valueOf(soundType);
-            this.other = config.getBoolean("sound.other");
-            this.volume = config.getDouble("sound.volume");
+            customItem.sound = Sound.valueOf(soundType);
+            customItem.other = config.getBoolean("sound.other");
+            customItem.volume = config.getDouble("sound.volume");
         }
-        this.placeholder = config.getString("placeholder", "");
-        this.papi_message = ItemUtils.colorReplace(config.getString("papi_message", ""));
-        this.permission = config.getString("permission", "");
-        this.per_message = ItemUtils.colorReplace(config.getString("per_message", ""));
-        this.use_num = config.getInt("use_num", -1);
-        this.cool_down = config.getLong("cool_down", 0) * 1000;
-        this.cool_message = ItemUtils.colorReplace(config.getString("cool_message", ""));
-        this.message = ItemUtils.colorReplace(config.getString("message", ""));
-        this.announce = ItemUtils.colorReplace(config.getString("announce", ""));
-        this.commands = config.getStringList("commands");
-        return true;
+        // PAPI变量条件
+        customItem.placeholder = config.getStringList("placeholder");
+        customItem.papi_message = config.getStringList("papi_message");
+        customItem.papi_message.replaceAll(ItemUtils::colorReplace);
+        // 权限条件
+        customItem.permission = config.getStringList("permission");
+        customItem.per_message = config.getStringList("per_message");
+        customItem.per_message.replaceAll(ItemUtils::colorReplace);
+        // 使用次数
+        customItem.use_num = config.getInt("use_num", -1);
+        // 冷却时间
+        customItem.cool_down = config.getLong("cool_down", 0) * 1000;
+        customItem.cool_message = config.getStringList("cool_message");
+        customItem.cool_message.replaceAll(ItemUtils::colorReplace);
+        // 发送消息
+        customItem.message = config.getStringList("message");
+        customItem.message.replaceAll(ItemUtils::colorReplace);
+        // 指令集合
+        customItem.commands = config.getStringList("commands");
+        return customItem;
     }
 
-    public ItemStack getItemStack() {
-        return itemStack;
-    }
-
-    public Sound getSound() {
-        return sound;
-    }
-
-    public boolean isOther() {
-        return other;
-    }
-
-    public double getVolume() {
-        return volume;
-    }
-
-    public String getPlaceholder() {
-        return placeholder;
-    }
-
-    public String getPapi_message() {
-        return papi_message;
-    }
-
-    public String getPermission() {
-        return permission;
-    }
-
-    public String getPer_message() {
-        return per_message;
-    }
-
-    public int getUse_num() {
-        return use_num;
-    }
-
-    public long getCool_down() {
-        return cool_down;
-    }
-
-    public String getCool_message() {
-        return cool_message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public String getAnnounce() {
-        return announce;
-    }
-
-    public List<String> getCommands() {
-        return commands;
-    }
 }

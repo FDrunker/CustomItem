@@ -5,15 +5,4 @@ useItemPrefix: '&6[物品]'
 # 是否启用name检测
 # 物品名字必须中含有item文件夹下的配置文件名才能触发配置文件中的使用条件等
 # 例如配置文件为: 疯狂钻石.yml 只要物品名中必须含有 疯狂钻石
-# 但使用次数和物品冷却必须启用checkLore才能生效
 checkNameEnable: true
-# 是否启用lore检测
-# 例如useNumLore为 使用次数: {num}
-# 当物品lore中有一条lore为 使用次数: 3
-# 那么物品就会触发使用限制
-checkLoreEnable: true
-# 使用次数lore的自定义
-# {num} 就是使用次数
-# 物品想被使用几次就在lore里加上 剩余使用次数: 3
-# 那么物品使用一次数字就会-1
-useNumLore: '剩余使用次数: {num}'

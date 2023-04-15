@@ -20,7 +20,7 @@ public class Main extends JavaPlugin {
         saveDefaultConfig();
         reloadConfig();
         itemManager = new ItemManager(instance);
-        itemManager.loadItems();
+        Bukkit.getScheduler().runTaskAsynchronously(this, itemManager::loadItems);
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             papiEnable = true;
             getLogger().info("检测到PlaceholderAPI插件, 支持变量判断");
