@@ -95,11 +95,7 @@ public class PlayerUseItemListener implements Listener {
 
         // 播放音效
         if (customItem.getSound() != null) {
-            if (customItem.isOther()) {
-                player.playSound(player.getLocation(), customItem.getSound(), (float) customItem.getVolume(), 1.0f);
-            } else {
-                player.playSound(player, customItem.getSound(), (float) customItem.getVolume(), 1.0f);
-            }
+            player.playSound(player.getLocation(), customItem.getSound(), (float) customItem.getVolume(), (float) customItem.getPitch());
         }
 
         // 发送消息

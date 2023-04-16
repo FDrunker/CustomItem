@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.mczuijiu.customItem'
-version '1.0-SNAPSHOT'
+version '2.0-SNAPSHOT'
 
 repositories {
     maven { url 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }

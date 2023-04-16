@@ -27,12 +27,12 @@ attributes: true
 enchants: true
 # 使用后的声音
 sound:
-  # 其他玩家是否能听见
-  other: false
   # 声音 (必须全大写, 只支持当前版本有的声音)
   type: 'ENTITY_PLAYER_LEVELUP'
   # 音量
   volume: 1
+  # 音阶
+  pitch: 0
 # 满足变量才能使用(例如下发示例, 玩家金币等于100块钱时才能使用)
 # 还可以使用 大于> 小于< 不等于!= 等运算符
 # 大部分PAPI变量都支持

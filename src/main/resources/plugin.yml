@@ -1,6 +1,6 @@
 name: CustomItem
 main: com.mczuijiu.customItem.Main
-version: 1.0
+version: 2.0
 depend: [NBTAPI]
 commands:
   customitem:

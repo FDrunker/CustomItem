@@ -22,9 +22,9 @@ public class CustomItem {
     @Getter
     private Sound sound;
     @Getter
-    private boolean other;
-    @Getter
     private double volume;
+    @Getter
+    private double pitch;
     @Getter
     private List<String> placeholder;
     @Getter
@@ -90,8 +90,8 @@ public class CustomItem {
         String soundType = config.getString("sound.type", "");
         if (!soundType.equalsIgnoreCase("")) {
             customItem.sound = Sound.valueOf(soundType);
-            customItem.other = config.getBoolean("sound.other");
             customItem.volume = config.getDouble("sound.volume");
+            customItem.pitch = config.getDouble("sound.pitch");
         }
         // PAPI变量条件
         customItem.placeholder = config.getStringList("placeholder");
