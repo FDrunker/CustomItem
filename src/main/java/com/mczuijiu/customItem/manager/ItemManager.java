@@ -10,7 +10,9 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -118,35 +120,11 @@ public class ItemManager {
      * @return 是否满足条件
      */
     public boolean contentPlaceholder(Player player, String placeholder) {
-        if (placeholder.contains("=")) {
-            String[] split = placeholder.split("=");
-            String str = PlaceholderAPI.setPlaceholders(player, split[0]);
-            if (ItemUtils.isNumeric(split[1])) {
-                return Integer.parseInt(str) == Integer.parseInt(split[1]);
-            }
-            return str.equalsIgnoreCase(split[1]);
-        }
-        if (placeholder.contains(">")) {
-            String[] split = placeholder.split(">");
-            String str = PlaceholderAPI.setPlaceholders(player, split[0]);
-            if (ItemUtils.isNumeric(split[1])) {
-                return Integer.parseInt(str) > Integer.parseInt(split[1]);
-            }
-            return false;
-        }
         if (placeholder.contains(">=")) {
             String[] split = placeholder.split(">=");
             String str = PlaceholderAPI.setPlaceholders(player, split[0]);
             if (ItemUtils.isNumeric(split[1])) {
                 return Integer.parseInt(str) >= Integer.parseInt(split[1]);
-            }
-            return false;
-        }
-        if (placeholder.contains("<")) {
-            String[] split = placeholder.split("<");
-            String str = PlaceholderAPI.setPlaceholders(player, split[0]);
-            if (ItemUtils.isNumeric(split[1])) {
-                return Integer.parseInt(str) < Integer.parseInt(split[1]);
             }
             return false;
         }
@@ -165,6 +143,30 @@ public class ItemManager {
                 return Integer.parseInt(str) != Integer.parseInt(split[1]);
             }
             return !str.equalsIgnoreCase(split[1]);
+        }
+        if (placeholder.contains("=")) {
+            String[] split = placeholder.split("=");
+            String str = PlaceholderAPI.setPlaceholders(player, split[0]);
+            if (ItemUtils.isNumeric(split[1])) {
+                return Integer.parseInt(str) == Integer.parseInt(split[1]);
+            }
+            return str.equalsIgnoreCase(split[1]);
+        }
+        if (placeholder.contains(">")) {
+            String[] split = placeholder.split(">");
+            String str = PlaceholderAPI.setPlaceholders(player, split[0]);
+            if (ItemUtils.isNumeric(split[1])) {
+                return Integer.parseInt(str) > Integer.parseInt(split[1]);
+            }
+            return false;
+        }
+        if (placeholder.contains("<")) {
+            String[] split = placeholder.split("<");
+            String str = PlaceholderAPI.setPlaceholders(player, split[0]);
+            if (ItemUtils.isNumeric(split[1])) {
+                return Integer.parseInt(str) < Integer.parseInt(split[1]);
+            }
+            return false;
         }
         return false;
     }
@@ -189,13 +191,11 @@ public class ItemManager {
                 }
                 nbt.setInteger(Main.getNbtKey() + ".use", 0);
                 itemStack = nbt.getItem();
-                ItemUtils.replaceLoreString(itemStack, "{useNum}", String.valueOf(customItem.getUse_num()));
                 itemStack.setAmount(itemStack.getAmount() - 1);
                 return itemStack;
             }
             nbt.setInteger(Main.getNbtKey() + ".use", useNum);
             itemStack = nbt.getItem();
-            ItemUtils.replaceLoreString(itemStack, "{useNum}", String.valueOf(customItem.getUse_num() - useNum));
         }
         return itemStack;
     }
@@ -218,14 +218,6 @@ public class ItemManager {
         }
         if (split[0].equalsIgnoreCase("actionbar")) {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(msg));
-            return;
-        }
-        if (split[0].equalsIgnoreCase("title")) {
-            player.sendTitle(msg, "", 1, 2, 1);
-            return;
-        }
-        if (split[0].equalsIgnoreCase("bossbar")) {
-            Bukkit.createBossBar(msg, BarColor.PURPLE, BarStyle.SEGMENTED_10);
             return;
         }
         if (split[0].equalsIgnoreCase("announce")) {

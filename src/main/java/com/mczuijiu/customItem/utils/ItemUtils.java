@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -144,23 +143,6 @@ public class ItemUtils {
 
     public static String colorReplace(@NotNull String message) {
         return message.replaceAll("&", "§");
-    }
-
-    public static void replaceLoreString(ItemStack itemStack, String regex, String replacement) {
-        if (itemStack == null) {
-            return;
-        }
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta == null) {
-            return;
-        }
-        List<String> lore = itemMeta.getLore();
-        if (lore == null) {
-            return;
-        }
-        lore.replaceAll(s -> s.replace(regex, replacement));
-        itemMeta.setLore(lore);
-        itemStack.setItemMeta(itemMeta);
     }
 
 }

@@ -19,7 +19,6 @@ lore:
   - '&6持续力: B'
   - '&6射程: D'
   - '&6速度: A'
-  - '剩余使用次数: {useNum}'
 # 是否不可破坏
 unbreakable: true
 # 是否隐藏原版属性描述
@@ -41,13 +40,13 @@ placeholder:
   - '%vault_eco_balance%>=100'
 # 不满足PAPI变量时的通知
 papi_message:
-  - 'actionbar->&c血量不足100, 无法使用'
+  - 'chat->&c血量不足100, 无法使用'
 # 使用物品的权限
 permission:
   - 'customitem.example'
 # 没有权限时使用物品的通知
 per_message:
-  - 'bossbar->&c你没有权限使用该物品'
+  - 'announce->&c你没有权限使用该物品'
 # 使用次数(-1则代表无限次)
 use_num: 2
 # 使用冷却(单位: 秒)
@@ -55,19 +54,15 @@ use_num: 2
 cool_down: 10
 # 当物品还在冷却中的通知
 cool_message:
-  - 'title->&c物品冷却中, 还有{cool}秒'
+  - 'actionbar->&c物品冷却中, 还有{cool}秒'
 # 使用完后发送消息
 # 所有通知都支持PAPI变量
 # chat 发送至聊天框
 # actionbar 发送至血条上方
-# title 发送至屏幕中间
-# bossbar 发送至boss血条
 # announce 全服通知
 message:
   - 'chat->&a你使用了疯狂钻石!'
   - 'actionbar->&a你使用了疯狂钻石!'
-  - 'title->&a你使用了疯狂钻石!'
-  - 'bossbar->&a你使用了疯狂钻石!'
   - 'announce->&a玩家%player_name%使用了疯狂钻石!'
 # cmd 玩家执行
 # servercmd 控制台执行

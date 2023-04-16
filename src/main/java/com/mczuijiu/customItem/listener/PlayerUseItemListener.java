@@ -40,7 +40,7 @@ public class PlayerUseItemListener implements Listener {
         // 物品使用动作
         if (!customItem.getActions().isEmpty()) {
             customItem.getActions().forEach(action -> {
-                if (!Objects.equals(action, event.getAction())) {
+                if (!action.equals(event.getAction())) {
                     canUse.set(false);
                 }
             });
@@ -71,8 +71,8 @@ public class PlayerUseItemListener implements Listener {
             });
             if (!canUse.get()) {
                 customItem.getPer_message().forEach(msg -> itemManager.sendMessage(player, msg));
+                return;
             }
-            return;
         }
 
         // nbt操作
@@ -82,7 +82,7 @@ public class PlayerUseItemListener implements Listener {
             long cool = System.currentTimeMillis() - time;
             if (cool < customItem.getCool_down()) {
                 customItem.getCool_message().forEach(msg -> itemManager.sendMessage(player,
-                        msg.replace("{cool}", String.valueOf(cool/1000))));
+                        msg.replace("{cool}", String.valueOf((customItem.getCool_down() - cool)/1000))));
                 return;
             }
         } else {

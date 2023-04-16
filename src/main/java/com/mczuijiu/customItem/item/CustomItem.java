@@ -57,7 +57,8 @@ public class CustomItem {
             return null;
         }
         itemName = ItemUtils.colorReplace(itemName);
-        itemLore.replaceAll(ItemUtils::colorReplace);
+        itemLore.replaceAll(s -> ItemUtils.colorReplace(s.replace("{useNum}",
+                String.valueOf(config.getInt("use_num", -1)))));
         customItem.itemStack = new ItemStack(ItemUtils.getMaterial(itemType));
         ItemMeta meta = customItem.itemStack.getItemMeta();
         if (meta == null) {
