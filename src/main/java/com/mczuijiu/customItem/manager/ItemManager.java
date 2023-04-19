@@ -9,26 +9,24 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarFlag;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ItemManager {
 
     private final Main plugin;
     private final Map<String, CustomItem> itemMap = new HashMap<>();
     private final String prefix = ItemUtils.colorReplace(Main.getMainConfig().getString("useItemPrefix", ""));
-
 
     public ItemManager(Main plugin) {
         this.plugin = plugin;
@@ -103,9 +101,13 @@ public class ItemManager {
         if (NBT.get(itemStack, nbt -> nbt.hasTag(Main.getNbtKey()))) {
             return itemMap.get(NBT.get(itemStack, nbt -> nbt.getString(Main.getNbtKey())));
         } else if (Main.getMainConfig().getBoolean("checkNameEnable")) {
-            for (String fileName : itemMap.keySet()) {
-                if (itemStack.getItemMeta() != null && itemStack.getItemMeta().getDisplayName().contains(fileName)) {
-                    return itemMap.get(fileName);
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            if (itemMeta != null) {
+                String displayName = itemMeta.getDisplayName();
+                for (Map.Entry<String, CustomItem> entry : itemMap.entrySet()) {
+                    if (displayName.contains(entry.getKey())) {
+                        return entry.getValue();
+                    }
                 }
             }
         }
@@ -120,55 +122,33 @@ public class ItemManager {
      * @return 是否满足条件
      */
     public boolean contentPlaceholder(Player player, String placeholder) {
-        if (placeholder.contains(">=")) {
-            String[] split = placeholder.split(">=");
-            String str = PlaceholderAPI.setPlaceholders(player, split[0]);
-            if (ItemUtils.isNumeric(split[1])) {
-                return Integer.parseInt(str) >= Integer.parseInt(split[1]);
-            }
+        Pattern pattern = Pattern.compile("([^><=!]+)([><=!]+)([^><=!]+)");
+        Matcher matcher = pattern.matcher(placeholder);
+        if (!matcher.matches()) {
             return false;
         }
-        if (placeholder.contains("<=")) {
-            String[] split = placeholder.split("<=");
-            String str = PlaceholderAPI.setPlaceholders(player, split[0]);
-            if (ItemUtils.isNumeric(split[1])) {
-                return Integer.parseInt(str) <= Integer.parseInt(split[1]);
-            }
-            return false;
+        String left = PlaceholderAPI.setPlaceholders(player, matcher.group(1));
+        String operator = matcher.group(2);
+        String right = matcher.group(3);
+        if (ItemUtils.isNumeric(left) && ItemUtils.isNumeric(right)) {
+            int leftNum = Integer.parseInt(left);
+            int rightNum = Integer.parseInt(right);
+            return switch (operator) {
+                case ">" -> leftNum > rightNum;
+                case "<" -> leftNum < rightNum;
+                case ">=" -> leftNum >= rightNum;
+                case "<=" -> leftNum <= rightNum;
+                case "=" -> leftNum == rightNum;
+                case "!=" -> leftNum != rightNum;
+                default -> false;
+            };
+        } else {
+            return switch (operator) {
+                case "=" -> left.equalsIgnoreCase(right);
+                case "!=" -> !left.equalsIgnoreCase(right);
+                default -> false;
+            };
         }
-        if (placeholder.contains("!=")) {
-            String[] split = placeholder.split("!=");
-            String str = PlaceholderAPI.setPlaceholders(player, split[0]);
-            if (ItemUtils.isNumeric(split[1])) {
-                return Integer.parseInt(str) != Integer.parseInt(split[1]);
-            }
-            return !str.equalsIgnoreCase(split[1]);
-        }
-        if (placeholder.contains("=")) {
-            String[] split = placeholder.split("=");
-            String str = PlaceholderAPI.setPlaceholders(player, split[0]);
-            if (ItemUtils.isNumeric(split[1])) {
-                return Integer.parseInt(str) == Integer.parseInt(split[1]);
-            }
-            return str.equalsIgnoreCase(split[1]);
-        }
-        if (placeholder.contains(">")) {
-            String[] split = placeholder.split(">");
-            String str = PlaceholderAPI.setPlaceholders(player, split[0]);
-            if (ItemUtils.isNumeric(split[1])) {
-                return Integer.parseInt(str) > Integer.parseInt(split[1]);
-            }
-            return false;
-        }
-        if (placeholder.contains("<")) {
-            String[] split = placeholder.split("<");
-            String str = PlaceholderAPI.setPlaceholders(player, split[0]);
-            if (ItemUtils.isNumeric(split[1])) {
-                return Integer.parseInt(str) < Integer.parseInt(split[1]);
-            }
-            return false;
-        }
-        return false;
     }
 
     /**
@@ -182,21 +162,21 @@ public class ItemManager {
      */
     public ItemStack computeUseNum(CustomItem customItem, NBTItem nbt) {
         int useNum = nbt.getInteger(Main.getNbtKey() + ".use");
-        ItemStack itemStack = null;
-        if (useNum != -1) {
-            useNum++;
-            if (useNum == customItem.getUse_num()) {
-                if (nbt.getItem().getAmount() == 1) {
-                    return null;
-                }
-                nbt.setInteger(Main.getNbtKey() + ".use", 0);
-                itemStack = nbt.getItem();
-                itemStack.setAmount(itemStack.getAmount() - 1);
-                return itemStack;
-            }
-            nbt.setInteger(Main.getNbtKey() + ".use", useNum);
-            itemStack = nbt.getItem();
+        if (useNum == -1) {
+            return null;
         }
+        useNum++;
+        if (useNum != customItem.getUse_num()) {
+            nbt.setInteger(Main.getNbtKey() + ".use", useNum);
+            return nbt.getItem();
+        }
+        ItemStack itemStack = nbt.getItem();
+        int newAmount = itemStack.getAmount() - 1;
+        if (newAmount == 0) {
+            return null;
+        }
+        itemStack.setAmount(newAmount);
+        nbt.setInteger(Main.getNbtKey() + ".use", 0);
         return itemStack;
     }
 
@@ -207,24 +187,20 @@ public class ItemManager {
      * @param message 消息
      */
     public void sendMessage(Player player, String message) {
-        if (!message.contains("->")) {
+        Pattern pattern = Pattern.compile("(chat|actionbar|announce)->(.+)");
+        Matcher matcher = pattern.matcher(message);
+        if (!matcher.matches()) {
+            plugin.getLogger().info(message + " 格式填写错误，无法发送!");
             return;
         }
-        String[] split = message.split("->");
-        String msg = PlaceholderAPI.setPlaceholders(player, split[1]);
-        if (split[0].equalsIgnoreCase("chat")) {
-            player.sendMessage(prefix + msg);
-            return;
+        String messageType = matcher.group(1);
+        String msg = PlaceholderAPI.setPlaceholders(player, matcher.group(2));
+        switch (messageType.toLowerCase()) {
+            case "chat" -> player.sendMessage(prefix + msg);
+            case "actionbar" -> player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(msg));
+            case "announce" -> Bukkit.broadcastMessage(msg);
+            default -> plugin.getLogger().info(message + " 格式填写错误，无法发送!");
         }
-        if (split[0].equalsIgnoreCase("actionbar")) {
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(msg));
-            return;
-        }
-        if (split[0].equalsIgnoreCase("announce")) {
-            Bukkit.broadcastMessage(msg);
-            return;
-        }
-        plugin.getLogger().info(message + "格式填写错误, 无法发送!");
     }
 
     /**
@@ -234,19 +210,19 @@ public class ItemManager {
      * @param command 指令集合
      */
     public void executeCommands(Player player, String command) {
-        if (!command.contains("->")) {
+        Pattern pattern = Pattern.compile("(cmd|servercmd)->(.+)");
+        Matcher matcher = pattern.matcher(command);
+        if (!matcher.matches()) {
+            plugin.getLogger().info(command + " 填写格式错误，无法执行!");
             return;
         }
-        String[] split = command.split("->");
-        if (split[0].equalsIgnoreCase("cmd")) {
-            Bukkit.dispatchCommand(player, split[1].replace("[player]", player.getName()));
-            return;
+        String commandType = matcher.group(1);
+        String cmd = matcher.group(2).replace("[player]", player.getName());
+        switch (commandType.toLowerCase()) {
+            case "cmd" -> Bukkit.dispatchCommand(player, cmd);
+            case "servercmd" -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+            default -> plugin.getLogger().info(command + " 填写格式错误，无法执行!");
         }
-        if (split[0].equalsIgnoreCase("servercmd")) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), split[1].replace("[player]", player.getName()));
-            return;
-        }
-        plugin.getLogger().info(command + "填写格式错误, 无法执行!");
     }
 
 }

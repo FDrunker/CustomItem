@@ -130,15 +130,10 @@ public class ItemUtils {
     }
 
     public static boolean isNumeric(String str) {
-        String newStr = str;
-        String regex = "([1-9]\\d*\\.?\\d+)|(0\\.\\d*[1-9])|(\\d+)";
+        String regex = "^[-+]?\\d*(\\.\\d+)?$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(str);
-        while (matcher.find()) {
-            String oldNumber = matcher.group();
-            newStr = newStr.replaceAll(oldNumber, "");
-        }
-        return newStr.isEmpty();
+        return matcher.matches();
     }
 
     public static String colorReplace(@NotNull String message) {
